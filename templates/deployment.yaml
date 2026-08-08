@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ci-cd-demo.fullname" . }}
+  labels:
+    app: {{ include "ci-cd-demo.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "ci-cd-demo.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "ci-cd-demo.name" . }}
+    spec:
+      containers:
+      - name: python-container
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 5000
+        env:
+        - name: PORT
+          value: "5000"
+        - name: VAULT_ADDR
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "ci-cd-demo.fullname" . }}-vault-config
+              key: vault-address
+        - name: VAULT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "ci-cd-demo.fullname" . }}-vault-secrets
+              key: vault-token
+      - name: prometheus-sidecar
+        image: prom/prometheus:v2
+        ports:
+        - containerPort: 8000
