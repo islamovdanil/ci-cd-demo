@@ -1,0 +1,25 @@
+image:
+  repository: registry.example.com/python-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 3
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+prometheus:
+  enabled: true
+
+secrets:
+  vaultAddr: http://vault-service:8200
+  vaultToken: your-vault-token
