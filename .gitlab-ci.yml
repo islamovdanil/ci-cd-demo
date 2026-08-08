@@ -1,0 +1,26 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: registry.example.com/python-app
+  TAG: $CI_COMMIT_SHA
+
+test:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - pytest
+
+build:
+  stage: build
+  script:
+    - docker build -t $IMAGE_NAME:$TAG .
+    - docker push $IMAGE_NAME:$TAG
+
+deploy:
+  stage: deploy
+  script:
+    - helm upgrade --install ci-cd-demo ./charts/ci-cd-demo
+      --set image.tag=$TAG
