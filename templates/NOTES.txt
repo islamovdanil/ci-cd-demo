@@ -1,0 +1,10 @@
+Metrics are available at:
+* /metrics endpoint
+
+To check application logs:
+kubectl logs <pod-name>
+
+For troubleshooting:
+* Check pod status: kubectl get pods
+* Describe pod: kubectl describe pod <pod-name>
+* Check events: kubectl get events
