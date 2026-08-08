@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ci-cd-demo.fullname" . }}-config
+  labels:
+    app: {{ include "ci-cd-demo.name" . }}
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name {{ .Values.ingress.hosts[0].host }};
+
+        location / {
+            proxy_pass http://{{ include "ci-cd-demo.fullname" . }}:5000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location /metrics {
+            proxy_pass http://{{ include "ci-cd-demo.fullname" . }}:8000;
+        }
+    }
